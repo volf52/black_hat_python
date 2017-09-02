@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
- @author : "Muhammad Arslan<rslnrkmt2552@gmail.com>"
+ @author : "Muhammad Arslan <rslnrkmt2552@gmail.com>"
 '''
 
 import sys
@@ -32,6 +32,7 @@ def usage():
     print "netvolf.py -t 192.168.0.1 -p 5555 -l -e=\"cat /etc/passwd\""
     print "echo 'ABCDEFGHI' | ./netvolf.py -t 192.168.11.12 -p 135"
     sys.exit(0)
+
 
 def main():
     global listen
@@ -75,6 +76,124 @@ def main():
 
     if listen:
         server_loop()
+
+
+def client_sender(buffer):
+
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        client.connect((target, port))
+        if len(buffer):
+            client.send(buffer)
+        while True:
+            # wait for the response
+            recv_len = 1
+            response = ""
+
+            while recv_len:
+                data = client.recv(4096)
+                recv_len = len(data)
+                response += data
+
+                if recv_len < 4096:
+                    break
+            if "EOF/ACK" in data:
+                raise
+            print response,
+
+            #get input
+            buffer = raw_input("")
+            buffer += "\n"
+
+            client.send(buffer)
+    except:
+        print "[*] Exception! Exiting."
+        client.send("EOF")
+        client.close()
+
+def server_loop():
+    global target
+    clients = []
+
+    if not len(target):
+        target = "0.0.0.0"
+
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind((target, port))
+    print "Server started. Listening for connections..."
+    server.listen(5)
+
+    while True:
+        try:
+            client_socket, addr = server.accept()
+
+            client_thread = threading.Thread(target = client_handler, args=(client_socket,))
+            clients.append(client_thread)
+            client_thread.start()
+        except (KeyboardInterrupt, SystemExit):
+            for x in clients:
+                x.join()
+            sys.exit(0)
+
+
+def run_command(command):
+    command = command.rstrip()
+    try:
+        output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+    except:
+        output = "Failed to execute command.\r\n"
+
+    return output
+
+
+def client_handler(client_socket):
+    global upload
+    global execute
+    global command
+
+    if len(upload_destination):
+        file_buffer = ""
+
+        while True:
+            data = client_socket.recv(1024)
+
+            if not data:
+                break
+            else:
+                file_buffer += data
+
+        try:
+            file_descriptor = open(upload_destination, "wb")
+            file_descriptor.write(file_buffer)
+            file_descriptor.close()
+
+            client_socket.send("Successfully saved file to %s.\r\n" % upload_destination)
+
+        except:
+            client_socket.send("Failed to save file to %s.\r\n" % upload_destination)
+
+    if len(execute):
+        output = run_command(execute)
+
+        client_socket.send(output)
+
+    if command:
+        while True:
+            client_socket.send("<NVolf:#>")
+            cmd_buffer = ""
+            while "\n" not in cmd_buffer or "EOF" not in cmd_buffer:
+                data = client_socket.recv(1024)
+                if len(data) < 1024:
+                    client_socket.send("EOF/ACK")
+                    return
+                cmd_buffer += data
+            if "EOF" in cmd_buffer:
+                client_socket.send("EOF/ACK")
+                return
+            response = run_command(cmd_buffer)
+            client_socket.send(response)
 
 
 main()
