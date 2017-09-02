@@ -10,7 +10,7 @@ import paramiko
 import threading
 import sys
 
-host_key = paramiko.RSAKey(filename='~/.ssh/id_rsa.pub')
+host_key = paramiko.RSAKey(filename='test_rsa.key')
 
 class Server(paramiko.ServerInterface):
     '''
@@ -27,7 +27,7 @@ class Server(paramiko.ServerInterface):
 
 
     def check_auth_password(self, username, password):
-        if (username == "volf") and (password == "anesa"):
+        if (username == "volf") and (password == "volf"):
             return paramiko.AUTH_SUCCESSFUL
         return paramiko.AUTH_FAILED
 
