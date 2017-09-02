@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 
 @author : 'Muhammad Arslan <rslnrkmt2552@gmail.com>'

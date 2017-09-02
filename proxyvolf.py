@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 
 @author : 'Muhammad Arslan <rslnrkmt2552@gmail.com>'
@@ -36,17 +36,19 @@ def server_loop(lhost, lport, rhost, rport, recv_first):
 
 def hexdump(src, length=16):
     '''
-    :param src: http://code.activestate.com/recipes/142812-hex-dumper/
+    :param src: https://github.com/ActiveState/code/tree/master/recipes/Python/142812_Hex_dumper
 
     '''
-    result = []
-    digits = 4 if isinstance(src, unicode) else 2
-    for i in xrange(0, len(src), length):
-        s = src[i:i + length]
-        hexa = b' '.join(["%0*X" % (digits, ord(x)) for x in s])
-        text = b''.join([x if 0x20 <= ord(x) < 0x7F else b'.' for x in s])
-        result.append(b"%04X %-*s %s" % (i, length * (digits + 1), hexa, text))
-        print b'\n'.join(result)
+    FILTER = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])
+    N = 0
+    result = ''
+    while src:
+        s, src = src[:length], src[length:]
+        hexa = ' '.join(["%02X" % ord(x) for x in s])
+        s = s.translate(FILTER)
+        result += "%04X   %-*s   %s\n" % (N, length * 3, hexa, s)
+        N += length
+    print result
 
 
 def recieve_from(conn):
