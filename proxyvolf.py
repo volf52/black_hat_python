@@ -4,7 +4,7 @@
 @author : 'Muhammad Arslan <rslnrkmt2552@gmail.com>'
 
 """
-
+# TODO : Make the handler mutlithreaded and change the way it monitors data
 import sys
 import socket
 import threading
