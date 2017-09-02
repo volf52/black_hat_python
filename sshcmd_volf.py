@@ -4,10 +4,9 @@
 @author : 'Muhammad Arslan <rslnrkmt2552@gmail.com>'
 
 """
+#TODO add a graceful exit
 
-import threading
 import paramiko
-import subprocess
 
 host = raw_input("[*] Enter IP > ").strip()
 user = raw_input("[*] Enter username > ").strip()
