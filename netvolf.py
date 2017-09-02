@@ -1,7 +1,9 @@
 #!/usr/bin/python
-'''
- @author : "Muhammad Arslan <rslnrkmt2552@gmail.com>"
-'''
+"""
+
+@author : 'Muhammad Arslan <rslnrkmt2552@gmail.com>'
+
+"""
 
 import sys
 import socket
@@ -51,7 +53,7 @@ def main():
         print str(err)
         usage()
 
-    for o,a in opts:
+    for o, a in opts:
         if o in ("-h", "--help"):
             usage()
         elif o in ("-l", "--listen"):
@@ -112,6 +114,7 @@ def client_sender(buffer):
         client.send("EOF")
         client.close()
 
+
 def server_loop():
     global target
     clients = []
@@ -122,7 +125,7 @@ def server_loop():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((target, port))
-    print "Server started. Listening for connections..."
+    print "[*]Server started\n. [*] Listening on %s:%d..." % (target, port)
     server.listen(5)
 
     while True:
@@ -195,5 +198,5 @@ def client_handler(client_socket):
             response = run_command(cmd_buffer)
             client_socket.send(response)
 
-
-main()
+if __name__ == "__main__":
+    main()
