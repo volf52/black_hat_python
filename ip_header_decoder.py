@@ -15,7 +15,7 @@ from ctypes import *
 from get_ip import get_lan_ip
 
 host = get_lan_ip()
-subnet = '.'.join(host.split('.')[:2]) + '.86.0/24'
+subnet = '.'.join(host.split('.')[:3]) + '.0/24'
 
 magic_message = "VOLF"
 
@@ -24,7 +24,6 @@ def udp_sender(host, subnet, magic_message):
     sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     addr = filter(lambda x: x != host, IPNetwork(subnet))
     for ip in addr:
-        print "Trying %s" % ip
         try:
             sender.sendto(magic_message, ("%s" % ip, 65212))
         except:
@@ -99,14 +98,14 @@ try:
     while True:
         raw_buffer = sniffer.recvfrom(65565)[0]
         ip_header = IP(raw_buffer[:20])
-        print "Protocol: %s\t%s -> %s" % (ip_header.protocol, ip_header.src_addr, ip_header.dst_addr)
+        #print "Protocol: %s\t%s -> %s" % (ip_header.protocol, ip_header.src_addr, ip_header.dst_addr)
 
         if ip_header.protocol == "ICMP":
 
             offset = ip_header.ihl * 4
             buf = raw_buffer[offset: offset + sizeof(ICMP)]
             icmp_header = ICMP(buf)
-            print "ICMP -> Type: %d Code: %d" % (icmp_header.type, icmp_header.code)
+            #print "ICMP -> Type: %d Code: %d" % (icmp_header.type, icmp_header.code)
 
             if icmp_header.code == 3 and icmp_header.type == 3:
                 if IPAddress(ip_header.src_addr) in IPNetwork(subnet):
