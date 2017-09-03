@@ -1,8 +1,9 @@
 import socket
 import os
+import get_ip
 
 #host to listen on
-host = raw_input("Enter your IP > ")
+host = get_ip.get_lan_ip()
 
 if os.name == "nt":
     socket_protocol = socket.IPPROTO_IP
@@ -21,6 +22,8 @@ sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 if os.name == "nt":
     sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
 
+print "Started"
+print "===================================="
 print sniffer.recvfrom(65565)
 
 if os.name == "nt":
