@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+"""
+
+@author : 'Muhammad Arslan <rslnrkmt2552@gmail.com>'
+
+"""
+
 import socket
 import os
 import get_ip
