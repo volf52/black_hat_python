@@ -46,7 +46,8 @@ while True:
         print process_log_message
         log_to_file(process_log_message)
 
-    except:
-        pass
+    except KeyboardInterrupt:
+        print "===============\nExiting..."
+        sys.exit(0)
 
 
